@@ -18,10 +18,31 @@
     #canvas-area {
       flex: 1;
       background: white;
+      position: relative;
     }
     #canvas {
       display: block;
       touch-action: none;
+    }
+    #history-buttons {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      display: flex;
+      gap: 8px;
+    }
+    #history-buttons button {
+      width: 48px;
+      height: 48px;
+      font-size: 24px;
+      border: 1px solid #bbb;
+      border-radius: 10px;
+      background: #f2f2f2;
+      cursor: pointer;
+    }
+    #history-buttons button:disabled {
+      opacity: 0.35;
+      cursor: default;
     }
     #sidebar {
       width: 250px;
@@ -29,10 +50,6 @@
       padding: 16px;
       box-sizing: border-box;
       border-left: 1px solid #bbb;
-    }
-    #sidebar h2 {
-      margin-top: 0;
-      font-size: 18px;
     }
     .tool-label {
       display: block;
@@ -53,6 +70,10 @@
   <div id="app">
     <div id="canvas-area">
       <canvas id="canvas"></canvas>
+      <div id="history-buttons">
+        <button id="undo-btn" aria-label="Undo">↩</button>
+        <button id="redo-btn" aria-label="Redo">↪</button>
+      </div>
     </div>
     <div id="sidebar">
       <label class="tool-label" for="color-picker">Color</label>
@@ -67,20 +88,72 @@
     const area = document.getElementById("canvas-area");
     const ctx = canvas.getContext("2d");
     const colorPicker = document.getElementById("color-picker");
+    const undoBtn = document.getElementById("undo-btn");
+    const redoBtn = document.getElementById("redo-btn");
 
     // Make the canvas fill its area
     canvas.width = area.clientWidth;
     canvas.height = area.clientHeight;
 
+    // ----- Undo / redo history -----
+    const MAX_HISTORY = 30;
+    let undoStack = [];
+    let redoStack = [];
+
+    function snapshot() {
+      return ctx.getImageData(0, 0, canvas.width, canvas.height);
+    }
+
+    function updateButtons() {
+      undoBtn.disabled = undoStack.length <= 1;
+      redoBtn.disabled = redoStack.length === 0;
+    }
+
+    function saveState() {
+      undoStack.push(snapshot());
+      if (undoStack.length > MAX_HISTORY) undoStack.shift();
+      redoStack = [];
+      updateButtons();
+    }
+
+    function undo() {
+      if (undoStack.length <= 1) return;
+      redoStack.push(undoStack.pop());
+      ctx.putImageData(undoStack[undoStack.length - 1], 0, 0);
+      updateButtons();
+    }
+
+    function redo() {
+      if (redoStack.length === 0) return;
+      const state = redoStack.pop();
+      undoStack.push(state);
+      ctx.putImageData(state, 0, 0);
+      updateButtons();
+    }
+
+    undoBtn.addEventListener("click", undo);
+    redoBtn.addEventListener("click", redo);
+
+    // Save the blank canvas as the starting point
+    saveState();
+
+    // ----- Drawing -----
     let drawing = false;
+
+    function endStroke() {
+      if (!drawing) return;
+      drawing = false;
+      saveState();
+    }
 
     canvas.addEventListener("pointerdown", (e) => {
       drawing = true;
       ctx.beginPath();
       ctx.moveTo(e.offsetX, e.offsetY);
     });
-    canvas.addEventListener("pointerup", () => drawing = false);
-    canvas.addEventListener("pointerleave", () => drawing = false);
+    canvas.addEventListener("pointerup", endStroke);
+    canvas.addEventListener("pointerleave", endStroke);
+    canvas.addEventListener("pointercancel", endStroke);
     canvas.addEventListener("pointermove", (e) => {
       if (!drawing) return;
       ctx.strokeStyle = colorPicker.value;
