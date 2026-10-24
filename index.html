@@ -19,7 +19,15 @@
       <label class="tool-label" for="color-picker">Color</label>
       <input type="color" id="color-picker" value="#000000">
 
-      <p>Brush size and eraser will go here.</p>
+<label class="tool-label" for="size-slider">
+  Brush size: <span id="size-value">10</span>
+</label>
+<input type="range" id="size-slider" min="1" max="100" value="10">
+
+<div id="tool-buttons">
+  <button id="brush-btn" class="active">Brush</button>
+  <button id="eraser-btn">Eraser</button>
+</div>
     </div>
   </div>
 
