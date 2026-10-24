@@ -76,3 +76,25 @@ canvas.addEventListener("pointermove", (e) => {
   ctx.lineTo(e.offsetX, e.offsetY);
   ctx.stroke();
 });
+#size-slider {
+  width: 100%;
+  margin-bottom: 20px;
+}
+#tool-buttons {
+  display: flex;
+  gap: 8px;
+}
+#tool-buttons button {
+  flex: 1;
+  height: 48px;
+  font-size: 16px;
+  border: 1px solid #bbb;
+  border-radius: 10px;
+  background: #f2f2f2;
+  cursor: pointer;
+}
+#tool-buttons button.active {
+  background: #4a90e2;
+  color: white;
+  border-color: #4a90e2;
+}
