@@ -70,8 +70,9 @@ canvas.addEventListener("pointerleave", endStroke);
 canvas.addEventListener("pointercancel", endStroke);
 canvas.addEventListener("pointermove", (e) => {
   if (!drawing) return;
+  ctx.globalCompositeOperation = erasing ? "destination-out" : "source-over";
   ctx.strokeStyle = colorPicker.value;
-  ctx.lineWidth = e.pressure * 10 || 5;
+  ctx.lineWidth = brushSize * (e.pressure || 0.5) * 2;
   ctx.lineCap = "round";
   ctx.lineTo(e.offsetX, e.offsetY);
   ctx.stroke();
@@ -98,3 +99,25 @@ canvas.addEventListener("pointermove", (e) => {
   color: white;
   border-color: #4a90e2;
 }
+// ----- Brush size and eraser -----
+let brushSize = 10;
+let erasing = false;
+
+const sizeSlider = document.getElementById("size-slider");
+const sizeValue = document.getElementById("size-value");
+const brushBtn = document.getElementById("brush-btn");
+const eraserBtn = document.getElementById("eraser-btn");
+
+sizeSlider.addEventListener("input", () => {
+  brushSize = Number(sizeSlider.value);
+  sizeValue.textContent = brushSize;
+});
+
+function setTool(isEraser) {
+  erasing = isEraser;
+  brushBtn.classList.toggle("active", !isEraser);
+  eraserBtn.classList.toggle("active", isEraser);
+}
+
+brushBtn.addEventListener("click", () => setTool(false));
+eraserBtn.addEventListener("click", () => setTool(true));
