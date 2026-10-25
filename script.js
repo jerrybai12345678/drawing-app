@@ -99,3 +99,6 @@ canvas.addEventListener("pointermove", (e) => {
   ctx.lineTo(e.offsetX, e.offsetY);
   ctx.stroke();
 });
+// ----- Block pinch-zoom on the page -----
+document.addEventListener("gesturestart", (e) => e.preventDefault());
+document.addEventListener("gesturechange", (e) => e.preventDefault());
