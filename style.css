@@ -60,3 +60,15 @@ html, body {
 html, body, button, input {
   touch-action: manipulation;
 }
+#color-picker {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
+}
+#color-picker::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+#color-picker::-webkit-color-swatch {
+  border: 1px solid #999;
+  border-radius: 0;
+}
