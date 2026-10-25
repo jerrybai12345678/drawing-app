@@ -57,3 +57,6 @@ html, body {
   cursor: pointer;
   background: none;
 }
+html, body, button, input {
+  touch-action: manipulation;
+}
