@@ -4,10 +4,32 @@ const ctx = canvas.getContext("2d");
 const colorPicker = document.getElementById("color-picker");
 const undoBtn = document.getElementById("undo-btn");
 const redoBtn = document.getElementById("redo-btn");
+const sizeSlider = document.getElementById("size-slider");
+const sizeValue = document.getElementById("size-value");
+const brushBtn = document.getElementById("brush-btn");
+const eraserBtn = document.getElementById("eraser-btn");
 
 // Make the canvas fill its area
 canvas.width = area.clientWidth;
 canvas.height = area.clientHeight;
+
+// ----- Tool settings -----
+let brushSize = 10;
+let erasing = false;
+
+sizeSlider.addEventListener("input", () => {
+  brushSize = Number(sizeSlider.value);
+  sizeValue.textContent = brushSize;
+});
+
+function setTool(isEraser) {
+  erasing = isEraser;
+  brushBtn.classList.toggle("active", !isEraser);
+  eraserBtn.classList.toggle("active", isEraser);
+}
+
+brushBtn.addEventListener("click", () => setTool(false));
+eraserBtn.addEventListener("click", () => setTool(true));
 
 // ----- Undo / redo history -----
 const MAX_HISTORY = 30;
@@ -77,47 +99,3 @@ canvas.addEventListener("pointermove", (e) => {
   ctx.lineTo(e.offsetX, e.offsetY);
   ctx.stroke();
 });
-#size-slider {
-  width: 100%;
-  margin-bottom: 20px;
-}
-#tool-buttons {
-  display: flex;
-  gap: 8px;
-}
-#tool-buttons button {
-  flex: 1;
-  height: 48px;
-  font-size: 16px;
-  border: 1px solid #bbb;
-  border-radius: 10px;
-  background: #f2f2f2;
-  cursor: pointer;
-}
-#tool-buttons button.active {
-  background: #4a90e2;
-  color: white;
-  border-color: #4a90e2;
-}
-// ----- Brush size and eraser -----
-let brushSize = 10;
-let erasing = false;
-
-const sizeSlider = document.getElementById("size-slider");
-const sizeValue = document.getElementById("size-value");
-const brushBtn = document.getElementById("brush-btn");
-const eraserBtn = document.getElementById("eraser-btn");
-
-sizeSlider.addEventListener("input", () => {
-  brushSize = Number(sizeSlider.value);
-  sizeValue.textContent = brushSize;
-});
-
-function setTool(isEraser) {
-  erasing = isEraser;
-  brushBtn.classList.toggle("active", !isEraser);
-  eraserBtn.classList.toggle("active", isEraser);
-}
-
-brushBtn.addEventListener("click", () => setTool(false));
-eraserBtn.addEventListener("click", () => setTool(true));
