@@ -70,5 +70,5 @@ html, body, button, input {
 }
 #color-picker::-webkit-color-swatch {
   border: 1px solid #999;
-  border-radius: 0;
+  border-radius: 5;
 }
