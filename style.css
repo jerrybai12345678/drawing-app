@@ -63,7 +63,7 @@ html, body, button, input {
 #color-picker {
   -webkit-appearance: none;
   appearance: none;
-  border-radius: 0;
+  border-radius: 5;
 }
 #color-picker::-webkit-color-swatch-wrapper {
   padding: 0;
