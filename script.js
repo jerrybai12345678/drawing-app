@@ -102,3 +102,29 @@ canvas.addEventListener("pointermove", (e) => {
 // ----- Block pinch-zoom on the page -----
 document.addEventListener("gesturestart", (e) => e.preventDefault());
 document.addEventListener("gesturechange", (e) => e.preventDefault());
+
+// ----- Resize canvas when the iPad rotates -----
+function resizeCanvas() {
+  const newWidth = area.clientWidth;
+  const newHeight = area.clientHeight;
+  if (newWidth === canvas.width && newHeight === canvas.height) return;
+
+  // Save the current drawing on a temporary canvas
+  const temp = document.createElement("canvas");
+  temp.width = canvas.width;
+  temp.height = canvas.height;
+  temp.getContext("2d").drawImage(canvas, 0, 0);
+
+  // Resize (this clears the main canvas), then put the drawing back
+  canvas.width = newWidth;
+  canvas.height = newHeight;
+  ctx.drawImage(temp, 0, 0);
+
+  // Old undo snapshots have the wrong size now, so start history fresh
+  undoStack = [];
+  redoStack = [];
+  saveState();
+}
+
+window.addEventListener("resize", resizeCanvas);
+window.addEventListener("orientationchange", () => setTimeout(resizeCanvas, 200));
